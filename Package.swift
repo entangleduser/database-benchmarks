@@ -20,8 +20,7 @@ let package = Package(
   /// manually sets a bundle identifier and name, so `SwiftData` can be used
   .package(url: "https://github.com/entangleduser/Swizzle.git", branch: "main"),
   /// for logging / printing text
-//  .package(url: "https://github.com/acrlc/Configuration.git", branch: "main"),
-   .package(path: "../../acrlc/Configuration"),
+  .package(url: "https://github.com/acrlc/Configuration.git", branch: "main"),
   /* MARK: - Database packages */
   /** had to rename `CSQLite` to `GRDBSQLite` to resolve conflict with
    `CSQLite` being used as a target name in `sqlite-nio` and `GRDB.swift` **/
