@@ -8,21 +8,21 @@ This benchmark uses [Acrylic](https://github.com/acrlc/acrylic), a declarative s
 ### Implementations
 #### SQLite
 ##### [GRDB](https://github.com/entangleduser/GRDB.swift)
-[x] Supports iOS 11.0+ / macOS 10.13+ / tvOS 11.0+ / watchOS 4.0+
-[] No object relationship mapping (ORM), [GRDB-ORM](https://github.com/Jasperav/GRDB-ORM) may help with this and improve performance (haven't tested).
+- [x] Supports iOS 11.0+ / macOS 10.13+ / tvOS 11.0+ / watchOS 4.0+
+- [ ] No object relationship mapping (ORM), [GRDB-ORM](https://github.com/Jasperav/GRDB-ORM) may help with this and improve performance (haven't tested).
 
 ##### [Lighter](https://github.com/Lighter-swift/Lighter) 
-[x] Supports Linux / macOS 10.15+ / iOS 13.0+
-[x] Uses a build plugin to generate queries
-[] No object relationship mapping
+- [x] Supports Linux / macOS 10.15+ / iOS 13.0+
+- [x] Uses a build plugin to generate queries
+- [ ] No object relationship mapping
 
 ##### SwiftData
-[x] Supports iOS 17.0+ / iPadOS 17.0+ / macOS 14.0+ / Mac Catalyst 17.0+ / tvOS 17.0+ / watchOS 10.0+ / visionOS 1.0+
-[x] Supports object relationship mapping
+- [x] Supports iOS 17.0+ / iPadOS 17.0+ / macOS 14.0+ / Mac Catalyst 17.0+ / tvOS 17.0+ / watchOS 10.0+ / visionOS 1.0+
+- [x] Supports object relationship mapping
 
 ##### [Vapor](https://github.com/vapor/Vapor) with [SQLite](https://github.com/vapor/fluent-sqlite-driver) / [Fluent](https://github.com/vapor/Fluent)
-- Supports Linux / macOS 10.15+ / iOS 13.0+ / watchOS 6.0+ / tvOS 13.0+
-- Supports object relationship mapping
+- [x] Supports Linux / macOS 10.15+ / iOS 13.0+ / watchOS 6.0+ / tvOS 13.0+
+- [x] Supports object relationship mapping
 
 
 #### Others
