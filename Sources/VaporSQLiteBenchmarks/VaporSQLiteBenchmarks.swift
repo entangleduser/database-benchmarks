@@ -9,8 +9,14 @@ public final class VaporSQLiteBenchmarks: DatabaseBenchmark {
 
  public func prepare() async throws {
   var env = Environment.production
+  #if os(Linux)
+  let path =
+   baseURL.appendingPathComponent(sqliteName).path.removingPercentEncoding!
+  #else
   let path =
    baseURL.appendingPathComponent(sqliteName).path(percentEncoded: false)
+  #endif
+
   try LoggingSystem.bootstrap(from: &env)
   // note: calling in xcode produces a warning about setting a custom directory
   let app = Application(env)
@@ -55,6 +61,8 @@ public final class VaporSQLiteBenchmarks: DatabaseBenchmark {
 
  public func remove() throws {
   try folder.file(named: sqliteName).delete()
+  // note: could be here in some cases
+  try? folder.file(named: sqliteName + "-journal").delete()
  }
 
  public init() {}

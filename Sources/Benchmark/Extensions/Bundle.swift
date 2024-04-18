@@ -1,3 +1,4 @@
+#if os(macOS) || os(iOS)
 import Foundation
 
 @objc
@@ -9,3 +10,4 @@ extension Bundle {
   ]
  }
 }
+#endif

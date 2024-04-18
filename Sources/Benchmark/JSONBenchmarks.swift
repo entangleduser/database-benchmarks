@@ -12,11 +12,12 @@ struct Person: Identifiable, Codable, Hashable {
 /// A JSON Benchmark that would probably make a good defaults library
 final class JSONBenchmarks: DatabaseBenchmark {
  let name: String = "People.json"
+ lazy var url = folder.url.appendingPathComponent(name)
+ 
  var encoder: JSONEncoder!
  var decoder: JSONDecoder!
  var values: [Int: Person]?
 
- lazy var url = folder.url.appendingPathComponent(name, conformingTo: .json)
  func prepare() throws {
   encoder = JSONEncoder()
   decoder = JSONDecoder()

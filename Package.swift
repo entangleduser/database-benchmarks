@@ -8,28 +8,21 @@ let package = Package(
  products: [
   .executable(name: "databaseBenchmarks", targets: ["Benchmark"]),
   .library(name: "DatabaseBenchmark", targets: ["DatabaseBenchmark"]),
-  .library(name: "GRDBBenchmarks", targets: ["GRDBBenchmarks"]),
   .library(name: "LighterBenchmarks", targets: ["LighterBenchmarks"]),
-  .library(name: "SwiftDataBenchmarks", targets: ["SwiftDataBenchmarks"]),
   .library(name: "VaporSQLiteBenchmarks", targets: ["VaporSQLiteBenchmarks"])
  ],
  dependencies: [
   .package(url: "https://github.com/acrlc/Core.git", branch: "main"),
-  .package(url: "https://github.com/acrlc/Acrylic.git", branch: "main"),
+   .package(url: "https://github.com/acrlc/Acrylic.git", branch: "main"),
   .package(url: "https://github.com/acrlc/Benchmarks.git", branch: "main"),
-  /// manually sets a bundle identifier and name, so `SwiftData` can be used
-  .package(url: "https://github.com/entangleduser/Swizzle.git", branch: "main"),
   /// for logging / printing text
   .package(url: "https://github.com/acrlc/Configuration.git", branch: "main"),
-  /* MARK: - Database packages */
-  /** had to rename `CSQLite` to `GRDBSQLite` to resolve conflict with
-   `CSQLite` being used as a target name in `sqlite-nio` and `GRDB.swift` **/
-  .package(
-   url: "https://github.com/entangleduser/GRDB.swift.git",
-   branch: "database-benchmarks"
-  ),
+  /* MARK: - Cross Platform Dependencies */
   .package(url: "https://github.com/vapor/Vapor.git", from: "4.92.5"),
-  .package(url: "https://github.com/Lighter-swift/Lighter.git", from: "1.2.4"),
+  .package(
+   url: "https://github.com/entangleduser/Lighter.git",
+   branch: "fix-linux-compatibility"
+  ),
   .package(url: "https://github.com/vapor/Fluent.git", branch: "main"),
   .package(
    url: "https://github.com/vapor/fluent-sqlite-driver.git", from: "4.6.0"
@@ -40,15 +33,12 @@ let package = Package(
    name: "Benchmark",
    dependencies: [
     "Core",
-    "Swizzle",
     "Acrylic",
     .product(name: "Tests", package: "Acrylic"),
     "Benchmarks",
     "Configuration",
     "DatabaseBenchmark",
-    "GRDBBenchmarks",
     "LighterBenchmarks",
-    "SwiftDataBenchmarks",
     "VaporSQLiteBenchmarks"
    ]
   ),
@@ -62,13 +52,6 @@ let package = Package(
    ]
   ),
   .target(
-   name: "GRDBBenchmarks",
-   dependencies: [
-    .product(name: "GRDB", package: "GRDB.swift"),
-    "DatabaseBenchmark"
-   ]
-  ),
-  .target(
    name: "LighterBenchmarks",
    dependencies: [
     "Lighter",
@@ -77,10 +60,6 @@ let package = Package(
    exclude: ["PeopleDB.sql"],
    resources: [.copy("PeopleDB-001.sqlite")],
    plugins: [.plugin(name: "Enlighter", package: "Lighter")]
-  ),
-  .target(
-   name: "SwiftDataBenchmarks",
-   dependencies: ["DatabaseBenchmark"]
   ),
   .target(
    name: "VaporSQLiteBenchmarks",
@@ -93,3 +72,49 @@ let package = Package(
   )
  ]
 )
+
+/* MARK: - Platform Dependencies */
+
+#if os(macOS) || os(iOS)
+package.dependencies.append(
+ contentsOf: [
+  /// manually sets a bundle identifier and name, so `SwiftData` can be used
+  .package(url: "https://github.com/entangleduser/Swizzle.git", branch: "main"),
+  /** had to rename `CSQLite` to `CSQLite_GRDB` to resolve conflict with
+   `CSQLite` being used as a target name in `sqlite-nio` and `GRDB.swift` **/
+  .package(
+   url: "https://github.com/entangleduser/GRDB.swift.git",
+   branch: "database-benchmarks"
+  )
+ ]
+)
+package.targets.append(
+ contentsOf: [
+  .target(
+   name: "GRDBBenchmarks",
+   dependencies: [
+    .product(name: "GRDB", package: "GRDB.swift"),
+    "DatabaseBenchmark"
+   ]
+  ),
+  .target(
+   name: "SwiftDataBenchmarks",
+   dependencies: ["DatabaseBenchmark"]
+  )
+ ]
+)
+
+for target in package.targets {
+ if target.name == "Benchmark" {
+  target.dependencies += ["GRDBBenchmarks", "SwiftDataBenchmarks", "Swizzle"]
+  break
+ }
+}
+
+package.products.append(
+ contentsOf: [
+  .library(name: "GRDBBenchmarks", targets: ["GRDBBenchmarks"]),
+  .library(name: "SwiftDataBenchmarks", targets: ["SwiftDataBenchmarks"])
+ ]
+)
+#endif

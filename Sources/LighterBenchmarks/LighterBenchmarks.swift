@@ -41,6 +41,8 @@ public final class LighterBenchmarks: DatabaseBenchmark {
 
  public func remove() throws {
   try folder.file(named: sqliteName).delete()
+  // note: could be here in some cases
+  try? folder.file(named: sqliteName + "-journal").delete()
  }
 
  public init() {}

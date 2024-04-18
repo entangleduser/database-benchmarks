@@ -81,7 +81,7 @@ public extension DatabaseBenchmark {
 
    Identity("Count Zero", count) == .zero
 
-   Benchmark("\(Self.name) Insert x 111") {
+   Benchmark("\(Self.name) Insert 111") {
     Measure.Async("Insert", warmup: 1, iterations: 11) {
      for int in 0 ..< 111 {
       try await blackHole(performInsert(id: int, name: "Jasmine"))
@@ -93,7 +93,7 @@ public extension DatabaseBenchmark {
     }
    }
 
-   Benchmark("\(Self.name) Remove x 111") {
+   Benchmark("\(Self.name) Remove 111") {
     Measure.Async("Insert", warmup: 1, iterations: 11) {
      for int in 0 ..< 111 {
       try await blackHole(performRemove(id: int))
@@ -108,7 +108,7 @@ public extension DatabaseBenchmark {
    Identity("Count 111", count) == 111
    Perform.Async(detached: true, action: clear)
 
-   Benchmark("\(Self.name) Insert x 333") {
+   Benchmark("\(Self.name) Insert 333") {
     Measure.Async("Insert", iterations: 3) {
      for int in 0 ..< 333 {
       try await blackHole(performInsert(id: int, name: "Jade"))
@@ -120,7 +120,7 @@ public extension DatabaseBenchmark {
     }
    }
 
-   Benchmark("\(Self.name) Remove x 333") {
+   Benchmark("\(Self.name) Remove 333") {
     Measure.Async("Insert", iterations: 3) {
      for int in 0 ..< 333 {
       try await blackHole(performRemove(id: int))
@@ -135,7 +135,7 @@ public extension DatabaseBenchmark {
    Identity("Count 333", count) == 333
    Perform.Async(detached: true, action: clear)
 
-   Benchmark("\(Self.name) Insert x 777") {
+   Benchmark("\(Self.name) Insert 777") {
     Measure.Async("Insert", iterations: 3) {
      for int in 0 ..< 777 {
       try await blackHole(performInsert(id: int, name: "Frank"))
@@ -147,7 +147,7 @@ public extension DatabaseBenchmark {
     }
    }
 
-   Benchmark("\(Self.name) Remove x 777") {
+   Benchmark("\(Self.name) Remove 777") {
     Measure.Async("Insert", iterations: 3) {
      for int in 0 ..< 777 {
       try await blackHole(performRemove(id: int))

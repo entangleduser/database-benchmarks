@@ -1,8 +1,10 @@
 import DatabaseBenchmark
-import GRDBBenchmarks
 import LighterBenchmarks
+#if os(macOS) || os(iOS)
+import GRDBBenchmarks
 import SwiftDataBenchmarks
 import Swizzle
+#endif
 import Tests
 import VaporSQLiteBenchmarks
 
@@ -64,7 +66,7 @@ struct DatabaseBenchmarks: StaticTests {
     notify(
      """
      skipping SwiftData benchmarks
-     \tSwiftData supports macOS => 14 || iOS => 16 only
+     \tSwiftData supports macOS => 14 || iOS => 17 only
      """,
      with: .notice
     )
