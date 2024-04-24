@@ -1,6 +1,8 @@
+import Command
 import DatabaseBenchmark
 import LighterBenchmarks
 #if os(macOS) || os(iOS)
+import CoreDataBenchmarks
 import GRDBBenchmarks
 import SwiftDataBenchmarks
 import Swizzle
@@ -9,8 +11,28 @@ import Tests
 import VaporSQLiteBenchmarks
 
 @main
-struct DatabaseBenchmarks: StaticTests {
+struct DatabaseBenchmarks: TestsCommand {
+ @Flag
+ var breakOnError: Bool
+ /// Include trivial benchmarks (JSON)
+ @Flag
+ var includeTrivial: Bool
+ /// The scale of database operations (0.1-5)
+ @Option
+ var scale: Double?
+ /// The scale of benchmark operations (1-5)
+ @Option
+ var pressure: Size?
+
  func setUp() throws {
+  if let scale, scale > 0 {
+   benchmarkScale = min(5, max(0.1, scale))
+  }
+  
+  if let pressure {
+   benchmarkPressure = benchmarkPressure > 5 ? 5 : pressure
+  }
+  
   let folder = Folder.current
   notify(
    """
@@ -30,9 +52,9 @@ struct DatabaseBenchmarks: StaticTests {
     with: .info
    )
 
-   try Swizzle(Bundle.self) { Bundle in
-    #selector(getter: Bundle.infoDictionary)
-     <-> #selector(getter: Bundle.newInfoDictionary)
+   try Swizzle(Bundle.self) {
+    #selector(getter: $0.infoDictionary)
+     <-> #selector(getter: $0.newInfoDictionary)
    }
 
    print()
@@ -41,13 +63,27 @@ struct DatabaseBenchmarks: StaticTests {
  }
 
  var tests: some Testable {
-  JSONBenchmarks()
+  if includeTrivial {
+   JSONBenchmarks()
+  }
   #if os(macOS) || os(iOS)
+  /*if Bundle.main.bundleIdentifier != nil {
+   CoreDataBenchmarks()
+  } else {
+   Perform(detached: true) {
+    print()
+    notify(
+     "skipping CoreData benchmarks\n\tBundle identifier unavailable",
+     with: .notice
+    )
+   }
+  }*/
   GRDBBenchmarks()
   #endif
   LighterBenchmarks()
 
   #if os(macOS) || os(iOS)
+
   if #available(macOS 14, iOS 17, *) {
    if Bundle.main.bundleIdentifier != nil {
     SwiftDataBenchmarks()

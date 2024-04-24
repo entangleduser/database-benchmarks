@@ -1,11 +1,14 @@
 @_exported import Acrylic
-import Benchmarks
+@_exported import Benchmarks
 @_exported import Configuration
 @_exported import Tests
+@_exported import struct Time.Size
 
 public let notify: Configuration = .default
 public let folder = Folder.current
 public let baseURL = folder.url
+public var benchmarkScale: Double = 2
+public var benchmarkPressure: Size = 2
 
 public protocol DatabaseBenchmark: Tests {
  func prepare() async throws
@@ -47,12 +50,20 @@ public extension DatabaseBenchmark {
   EmptyModule()
  }
 
+ var scale1: Int { Int(45 * benchmarkScale) }
+ var scale2: Int { Int(67 * benchmarkScale) }
+ var scale3: Int { Int(89 * benchmarkScale) }
+
  @Modular
  var tests: some Testable {
   get async throws {
    Perform.Async("Prepare \(Self.name)") { try await self.prepare() }
    Benchmark("\(Self.name) Insert") {
-    Measure.Async("Insert", warmup: 33, iterations: 444) {
+    Measure.Async(
+     "Insert",
+     warmup: 11 * benchmarkPressure,
+     iterations: 222 * benchmarkPressure
+    ) {
      try await blackHole(performInsert(id: .zero, name: "Kevin"))
     } onCompletion: {
      try await performRemove(id: .zero)
@@ -60,106 +71,118 @@ public extension DatabaseBenchmark {
    }
 
    Benchmark("\(Self.name) Remove") {
-    Measure.Async("Remove", warmup: 33, iterations: 444) {
+    Measure.Async(
+     "Remove",
+     warmup: 11 * benchmarkPressure,
+     iterations: 222 * benchmarkPressure
+    ) {
      try await blackHole(performRemove(id: .zero))
     } onCompletion: {
      try await performInsert(id: .zero, name: "Kevin")
     }
    }
 
-   Perform.Async("Clear", action: clear)
-   Identity("Empty Database", count) == .zero
+   Perform.Async("Clear", action: { try await clear() })
+   Identity("Empty Database") { try await count() } == .zero
 
    Perform.Async(
     "Check Insert",
     action: { try await performInsert(id: .zero, name: "William") }
    )
-   Identity("Count One", count) == 1
+   Identity("Count One") { try await count() } == 1
 
    Perform.Async("Check Remove", action: { try await performRemove(id: .zero)
    })
 
-   Identity("Count Zero", count) == .zero
+   Identity("Count Zero") { try await count() } == .zero
 
-   Benchmark("\(Self.name) Insert 111") {
-    Measure.Async("Insert", warmup: 1, iterations: 11) {
-     for int in 0 ..< 111 {
+   Benchmark("\(Self.name) Insert \(scale1)") {
+    Measure.Async(
+     "Insert",
+     warmup: 1 * benchmarkPressure,
+     iterations: 5 * benchmarkPressure
+    ) {
+     for int in 0 ..< scale1 {
       try await blackHole(performInsert(id: int, name: "Jasmine"))
      }
     } onCompletion: {
-     for int in 0 ..< 111 {
+     for int in 0 ..< scale1 {
       try await performRemove(id: int)
      }
     }
    }
 
-   Benchmark("\(Self.name) Remove 111") {
-    Measure.Async("Insert", warmup: 1, iterations: 11) {
-     for int in 0 ..< 111 {
+   Benchmark("\(Self.name) Remove \(scale1)") {
+    Measure.Async(
+     "Remove",
+     warmup: 1 * benchmarkPressure,
+     iterations: 5 * benchmarkPressure
+    ) {
+     for int in 0 ..< scale1 {
       try await blackHole(performRemove(id: int))
      }
     } onCompletion: {
-     for int in 0 ..< 111 {
+     for int in 0 ..< scale1 {
       try await performInsert(id: int, name: "Jade")
      }
     }
    }
 
-   Identity("Count 111", count) == 111
-   Perform.Async(detached: true, action: clear)
+   Identity("Count \(scale1)") { try await count() } == scale1
+   Perform.Async(detached: true, action: { try await clear() })
 
-   Benchmark("\(Self.name) Insert 333") {
-    Measure.Async("Insert", iterations: 3) {
-     for int in 0 ..< 333 {
+   Benchmark("\(Self.name) Insert \(scale2)") {
+    Measure.Async("Insert", iterations: 3 * benchmarkPressure) {
+     for int in 0 ..< scale2 {
       try await blackHole(performInsert(id: int, name: "Jade"))
      }
     } onCompletion: {
-     for int in 0 ..< 333 {
+     for int in 0 ..< scale2 {
       try await performRemove(id: int)
      }
     }
    }
 
-   Benchmark("\(Self.name) Remove 333") {
-    Measure.Async("Insert", iterations: 3) {
-     for int in 0 ..< 333 {
+   Benchmark("\(Self.name) Remove \(scale2)") {
+    Measure.Async("Remove", iterations: 3 * benchmarkPressure) {
+     for int in 0 ..< scale2 {
       try await blackHole(performRemove(id: int))
      }
     } onCompletion: {
-     for int in 0 ..< 333 {
+     for int in 0 ..< scale2 {
       try await performInsert(id: int, name: "Jade")
      }
     }
    }
 
-   Identity("Count 333", count) == 333
-   Perform.Async(detached: true, action: clear)
+   Identity("Count \(scale2)") { try await count() } == scale2
+   Perform.Async(detached: true, action: { try await clear() })
 
-   Benchmark("\(Self.name) Insert 777") {
-    Measure.Async("Insert", iterations: 3) {
-     for int in 0 ..< 777 {
+   Benchmark("\(Self.name) Insert \(scale3)") {
+    Measure.Async("Insert", iterations: 1 * benchmarkPressure) {
+     for int in 0 ..< scale3 {
       try await blackHole(performInsert(id: int, name: "Frank"))
      }
     } onCompletion: {
-     for int in 0 ..< 777 {
+     for int in 0 ..< scale3 {
       try await performRemove(id: int)
      }
     }
    }
 
-   Benchmark("\(Self.name) Remove 777") {
-    Measure.Async("Insert", iterations: 3) {
-     for int in 0 ..< 777 {
+   Benchmark("\(Self.name) Remove \(scale3)") {
+    Measure.Async("Remove", iterations: 1 * benchmarkPressure) {
+     for int in 0 ..< scale3 {
       try await blackHole(performRemove(id: int))
      }
     } onCompletion: {
-     for int in 0 ..< 777 {
+     for int in 0 ..< scale3 {
       try await performInsert(id: int, name: "Frank")
      }
     }
    }
 
-   Identity("Count 777", count) == 777
+   Identity("Count \(scale3)") { try await count() } == scale3
 
    Blackhole("\(Self.name) Remove User Frank") {
     try await performRemove(name: "Frank")
@@ -171,8 +194,8 @@ public extension DatabaseBenchmark {
 
    try await benchmarks
 
-   Perform.Async("Close Database", action: close)
-   Perform("Remove Database", action: remove)
+   Perform.Async("Close Database", action: { try await close() })
+   Perform("Remove Database", action: { try remove() })
   }
  }
 
@@ -180,5 +203,18 @@ public extension DatabaseBenchmark {
  func cleanUp() async throws {
   try? await close()
   try? remove()
+ }
+}
+
+// MARK: Size Extensions
+extension Size: LosslessStringConvertible {
+ public init?(_ description: String) {
+  self.init(stringValue: description)
+ }
+}
+
+public extension Size {
+ static func * (lhs: Self, rhs: Self) -> Self {
+  Self(rawValue: lhs.rawValue * rhs.rawValue)
  }
 }

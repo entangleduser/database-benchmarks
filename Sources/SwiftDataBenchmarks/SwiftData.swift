@@ -19,11 +19,13 @@ public final class SwiftDataBenchmarks: DatabaseBenchmark {
 
  lazy var context: ModelContext! = ModelContext(container)
 
+ @MainActor
  public func performInsert(id: Int, name: String) throws {
   context.insert(Person(id: id, name: name))
   try context.save()
  }
 
+ @MainActor
  public func performRemove(id: Int) throws {
   var desc = FetchDescriptor(predicate: #Predicate<Person> { $0.id == id })
   desc.fetchLimit = 1
@@ -34,6 +36,7 @@ public final class SwiftDataBenchmarks: DatabaseBenchmark {
   }
  }
 
+ @MainActor
  public func performRemove(name: String) throws {
   for model in try context.fetch(
    FetchDescriptor(predicate: #Predicate<Person> { $0.name == name })
@@ -55,7 +58,6 @@ public final class SwiftDataBenchmarks: DatabaseBenchmark {
  }
 
  public func close() throws {
-  container.deleteAllData()
   context = nil
   container = nil
  }

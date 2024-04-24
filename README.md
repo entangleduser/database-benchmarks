@@ -16,7 +16,7 @@ This benchmark uses [Acrylic](https://github.com/acrlc/acrylic), a declarative s
 - [x] Uses a build plugin to generate queries
 - [ ] No object relationship mapping
 
-##### SwiftData
+##### [SwiftData](https://developer.apple.com/xcode/swiftdata)
 - [x] Supports iOS 17.0+ / iPadOS 17.0+ / macOS 14.0+ / Mac Catalyst 17.0+ / tvOS 17.0+ / watchOS 10.0+ / visionOS 1.0+
 - [x] Supports object relationship mapping
 

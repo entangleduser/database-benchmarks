@@ -13,7 +13,8 @@ let package = Package(
  ],
  dependencies: [
   .package(url: "https://github.com/acrlc/Core.git", branch: "main"),
-   .package(url: "https://github.com/acrlc/Acrylic.git", branch: "main"),
+  .package(url: "https://github.com/acrlc/Command.git", branch: "main"),
+  .package(url: "https://github.com/acrlc/Acrylic.git", branch: "main"),
   .package(url: "https://github.com/acrlc/Benchmarks.git", branch: "main"),
   /// for logging / printing text
   .package(url: "https://github.com/acrlc/Configuration.git", branch: "main"),
@@ -33,6 +34,7 @@ let package = Package(
    name: "Benchmark",
    dependencies: [
     "Core",
+    "Command",
     "Acrylic",
     .product(name: "Tests", package: "Acrylic"),
     "Benchmarks",
@@ -91,6 +93,10 @@ package.dependencies.append(
 package.targets.append(
  contentsOf: [
   .target(
+   name: "CoreDataBenchmarks",
+   dependencies: ["DatabaseBenchmark"]
+  ),
+  .target(
    name: "GRDBBenchmarks",
    dependencies: [
     .product(name: "GRDB", package: "GRDB.swift"),
@@ -106,13 +112,19 @@ package.targets.append(
 
 for target in package.targets {
  if target.name == "Benchmark" {
-  target.dependencies += ["GRDBBenchmarks", "SwiftDataBenchmarks", "Swizzle"]
+  target.dependencies += [
+   "CoreDataBenchmarks",
+   "GRDBBenchmarks",
+   "SwiftDataBenchmarks",
+   "Swizzle"
+  ]
   break
  }
 }
 
 package.products.append(
  contentsOf: [
+  .library(name: "CoreDataBenchmarks", targets: ["CoreDataBenchmarks"]),
   .library(name: "GRDBBenchmarks", targets: ["GRDBBenchmarks"]),
   .library(name: "SwiftDataBenchmarks", targets: ["SwiftDataBenchmarks"])
  ]

@@ -7,23 +7,27 @@ public final class LighterBenchmarks: DatabaseBenchmark {
 
  public func prepare() async throws {
   let url = baseURL.appendingPathComponent(sqliteName)
-  db = try await PeopleDB.bootstrap(at: url, readOnly: false, overwrite: false)
+  db = try await PeopleDB.bootstrap(at: url)
  }
 
- public func performInsert(id: Int, name: String) async throws {
-  try await db.insert(Person(id: id, name: name))
+ @MainActor
+ public func performInsert(id: Int, name: String) throws {
+   try db.insert(Person(id: id, name: name))
  }
 
- public func performRemove(id: Int) async throws {
-  try await db.delete(from: \.people, id: id)
+ @MainActor
+ public func performRemove(id: Int) throws {
+  try db.delete(from: \.people, id: id)
  }
 
- public func performRemove(name: String) async throws {
-  try await db.delete(from: \.people, where: \.name, is: name)
+ @MainActor
+ public func performRemove(name: String) throws {
+  try db.delete(from: \.people, where: \.name, is: name)
  }
 
- public func clear() async throws {
-  try await db.delete(db.people.fetch())
+ @MainActor
+ public func clear() throws {
+  try db.delete(db.people.fetch())
  }
 
  // FIXME: incorrect count
