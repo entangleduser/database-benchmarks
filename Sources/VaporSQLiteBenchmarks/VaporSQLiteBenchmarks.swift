@@ -18,8 +18,11 @@ public final class VaporSQLiteBenchmarks: DatabaseBenchmark {
   #endif
 
   try LoggingSystem.bootstrap(from: &env)
-  // note: calling in xcode produces a warning about setting a custom directory
+
+  /// - Note:
+  /// Calling in xcode produces a warning about setting a custom directory
   let app = Application(env)
+
   app.logger.logLevel = .error
   app.databases.use(.sqlite(.file(path)), as: .sqlite, isDefault: true)
   app.migrations.add(PersonMigration())
@@ -68,7 +71,7 @@ public final class VaporSQLiteBenchmarks: DatabaseBenchmark {
  public init() {}
 }
 
-final class Person: Model {
+final class Person: Model, @unchecked Sendable {
  static let schema = "person"
 
  @ID(custom: "id")
