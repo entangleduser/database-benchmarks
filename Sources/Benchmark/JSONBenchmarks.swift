@@ -1,5 +1,6 @@
 import Core
 import DatabaseBenchmark
+import Foundation
 import Tests
 
 struct Person: Identifiable, Codable, Hashable {
@@ -13,7 +14,7 @@ struct Person: Identifiable, Codable, Hashable {
 final class JSONBenchmarks: DatabaseBenchmark {
  let name: String = "People.json"
  lazy var url = folder.url.appendingPathComponent(name)
- 
+
  var encoder: JSONEncoder!
  var decoder: JSONDecoder!
  var values: [Int: Person]?

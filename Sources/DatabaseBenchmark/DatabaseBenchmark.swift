@@ -1,8 +1,10 @@
 @_exported import Acrylic
 @_exported import Benchmarks
 @_exported import Configuration
+@_exported import Paths
 @_exported import Tests
 @_exported import struct Time.Size
+import struct Foundation.URL
 
 public let notify: Configuration = .default
 public let folder = Folder.current
@@ -29,7 +31,9 @@ public protocol DatabaseBenchmark: Tests {
 
 public extension DatabaseBenchmark {
  internal static var name: String {
-  String(describing: Self.self).replacingOccurrences(of: "Benchmarks", with: "")
+  
+  var name = String(describing: Self.self)
+   .replacingOccurrences(of: "Benchmarks", with: "")
  }
 
  var testName: String? {
@@ -83,18 +87,17 @@ public extension DatabaseBenchmark {
    }
 
    Perform.Async("Clear", action: { try await clear() })
-   Identity("Empty Database") { try await count() } == .zero
+   await Identity("Empty Database") { try await count() } == .zero
 
    Perform.Async(
     "Check Insert",
     action: { try await performInsert(id: .zero, name: "William") }
    )
-   Identity("Count One") { try await count() } == 1
+   await Identity("Count One") { try await count() } == 1
 
-   Perform.Async("Check Remove", action: { try await performRemove(id: .zero)
-   })
+   Perform.Async("Check Remove", action: { try await performRemove(id: .zero) })
 
-   Identity("Count Zero") { try await count() } == .zero
+   await Identity("Count Zero") { try await count() } == .zero
 
    Benchmark("\(Self.name) Insert \(scale1)") {
     Measure.Async(
@@ -128,7 +131,7 @@ public extension DatabaseBenchmark {
     }
    }
 
-   Identity("Count \(scale1)") { try await count() } == scale1
+   await Identity("Count \(scale1)") { try await count() } == scale1
    Perform.Async(detached: true, action: { try await clear() })
 
    Benchmark("\(Self.name) Insert \(scale2)") {
@@ -155,7 +158,7 @@ public extension DatabaseBenchmark {
     }
    }
 
-   Identity("Count \(scale2)") { try await count() } == scale2
+   await Identity("Count \(scale2)") { try await count() } == scale2
    Perform.Async(detached: true, action: { try await clear() })
 
    Benchmark("\(Self.name) Insert \(scale3)") {
@@ -182,7 +185,7 @@ public extension DatabaseBenchmark {
     }
    }
 
-   Identity("Count \(scale3)") { try await count() } == scale3
+   await Identity("Count \(scale3)") { try await count() } == scale3
 
    Blackhole("\(Self.name) Remove User Frank") {
     try await performRemove(name: "Frank")

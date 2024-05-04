@@ -16,6 +16,7 @@ let package = Package(
   .package(url: "https://github.com/acrlc/Command.git", branch: "main"),
   .package(url: "https://github.com/acrlc/Acrylic.git", branch: "main"),
   .package(url: "https://github.com/acrlc/Benchmarks.git", branch: "main"),
+  .package(url: "https://github.com/acrlc/Paths.git", branch: "main"),
   /// for logging / printing text
   .package(url: "https://github.com/acrlc/Configuration.git", branch: "main"),
   /* MARK: - Cross Platform Dependencies */
@@ -50,7 +51,8 @@ let package = Package(
     "Acrylic",
     .product(name: "Tests", package: "Acrylic"),
     "Benchmarks",
-    "Configuration"
+    "Configuration",
+    "Paths"
    ]
   ),
   .target(
