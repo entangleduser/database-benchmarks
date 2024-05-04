@@ -1,3 +1,4 @@
+@_spi(ModuleReflection) import Acrylic
 @_exported import Acrylic
 @_exported import Benchmarks
 @_exported import Configuration
@@ -31,14 +32,25 @@ public protocol DatabaseBenchmark: Tests {
 
 public extension DatabaseBenchmark {
  internal static var name: String {
+  var typeName = typeConstructorName
+  let suffixes = ["Benchmarks", "Benchmark"]
   
-  var name = String(describing: Self.self)
-   .replacingOccurrences(of: "Benchmarks", with: "")
+  for suffix in suffixes where typeName.hasSuffix(suffix) {
+   guard typeName != suffix else { return suffix }
+   
+   let startIndex = typeName.index(typeName.endIndex, offsetBy: -suffix.count)
+   
+   typeName.removeSubrange(startIndex...)
+   typeName.append(" \(suffix)")
+   break
+  }
+  return typeName
  }
 
  var testName: String? {
   Self.name
  }
+ 
 
  var sqliteName: String {
   "\(Self.self).sqlite"
