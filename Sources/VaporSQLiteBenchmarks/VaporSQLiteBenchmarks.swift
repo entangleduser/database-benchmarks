@@ -21,7 +21,7 @@ public final class VaporSQLiteBenchmarks: DatabaseBenchmark {
 
   /// - Note:
   /// Calling in xcode produces a warning about setting a custom directory
-  let app = Application(env)
+  let app = try await Application.make(env)
 
   app.logger.logLevel = .error
   app.databases.use(.sqlite(.file(path)), as: .sqlite, isDefault: true)
@@ -31,7 +31,7 @@ public final class VaporSQLiteBenchmarks: DatabaseBenchmark {
   self.app = app
   db = app.db
 
-  Task(priority: .utility) {
+  Task(priority: .high) {
    try await app.execute()
   }
  }
