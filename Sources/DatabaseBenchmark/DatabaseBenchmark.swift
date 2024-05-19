@@ -31,6 +31,7 @@ public protocol DatabaseBenchmark: Tests {
 }
 
 public extension DatabaseBenchmark {
+ @usableFromInline
  internal static var name: String {
   var typeName = typeConstructorName
   let suffixes = ["Benchmarks", "Benchmark"]
@@ -225,11 +226,5 @@ public extension DatabaseBenchmark {
 extension Size: LosslessStringConvertible {
  public init?(_ description: String) {
   self.init(stringValue: description)
- }
-}
-
-public extension Size {
- static func * (lhs: Self, rhs: Self) -> Self {
-  Self(rawValue: lhs.rawValue * rhs.rawValue)
  }
 }
